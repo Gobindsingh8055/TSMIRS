@@ -1,374 +1,552 @@
-import React, { useState, useEffect } from 'react';
-import { MapPin, Shield, AlertTriangle, CheckCircle, Users, Activity, Bell, Lock, Radio } from 'lucide-react';
+// ==================== MODEL CLASSES ====================
 
-const TouristSafetySystem = () => {
-  const [activeTab, setActiveTab] = useState('dashboard');
-  const [tourists, setTourists] = useState([]);
-  const [incidents, setIncidents] = useState([]);
-  const [alerts, setAlerts] = useState([]);
-  const [safeZones, setSafeZones] = useState([
-    { id: 1, name: 'Tourist District', lat: 28.6139, lng: 77.2090, radius: 2, status: 'safe' },
-    { id: 2, name: 'Heritage Zone', lat: 28.6562, lng: 77.2410, radius: 1.5, status: 'safe' },
-    { id: 3, name: 'Market Area', lat: 28.6289, lng: 77.2065, radius: 1, status: 'caution' }
-  ]);
+// Tourist.java
+package com.touristsafety.model;
 
-  useEffect(() => {
-    // Initialize with sample data
-    setTourists([
-      { id: 'T001', name: 'John Smith', country: 'USA', location: { lat: 28.6139, lng: 77.2090 }, status: 'safe', blockchainId: '0x7a9f...3c2e' },
-      { id: 'T002', name: 'Maria Garcia', country: 'Spain', location: { lat: 28.6562, lng: 77.2410 }, status: 'safe', blockchainId: '0x4b1c...8d9a' },
-      { id: 'T003', name: 'Li Wei', country: 'China', location: { lat: 28.6289, lng: 77.2065 }, status: 'alert', blockchainId: '0x9e2f...1a4b' }
-    ]);
+public class Tourist {
+    private String id;
+    private String name;
+    private String country;
+    private Location location;
+    private String status;
+    private String blockchainId;
 
-    setIncidents([
-      { id: 'INC001', type: 'Medical', severity: 'medium', location: 'Market Area', time: '10 min ago', status: 'responding' },
-      { id: 'INC002', type: 'Theft Report', severity: 'low', location: 'Tourist District', time: '1 hr ago', status: 'resolved' }
-    ]);
+    public Tourist() {}
 
-    setAlerts([
-      { id: 'A001', message: 'Tourist T003 entered restricted zone', severity: 'warning', time: '5 min ago' },
-      { id: 'A002', message: 'Crowding detected in Heritage Zone', severity: 'info', time: '15 min ago' }
-    ]);
-  }, []);
+    public Tourist(String id, String name, String country, Location location, String status, String blockchainId) {
+        this.id = id;
+        this.name = name;
+        this.country = country;
+        this.location = location;
+        this.status = status;
+        this.blockchainId = blockchainId;
+    }
 
-  const DashboardView = () => (
-    <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-        <StatCard icon={<Users />} label="Active Tourists" value={tourists.length} color="blue" />
-        <StatCard icon={<Shield />} label="Safe" value={tourists.filter(t => t.status === 'safe').length} color="green" />
-        <StatCard icon={<AlertTriangle />} label="Alerts" value={tourists.filter(t => t.status === 'alert').length} color="yellow" />
-        <StatCard icon={<Activity />} label="Active Incidents" value={incidents.filter(i => i.status === 'responding').length} color="red" />
-      </div>
+    // Getters and Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
+    public String getCountry() { return country; }
+    public void setCountry(String country) { this.country = country; }
+    
+    public Location getLocation() { return location; }
+    public void setLocation(Location location) { this.location = location; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+    
+    public String getBlockchainId() { return blockchainId; }
+    public void setBlockchainId(String blockchainId) { this.blockchainId = blockchainId; }
+}
 
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <MapPin className="w-5 h-5" />
-            Live Tourist Tracking
-          </h3>
-          <div className="space-y-3">
-            {tourists.map(tourist => (
-              <div key={tourist.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                <div>
-                  <p className="font-medium">{tourist.name}</p>
-                  <p className="text-sm text-gray-600">{tourist.country} • ID: {tourist.id}</p>
-                  <p className="text-xs text-gray-500 mt-1">Blockchain: {tourist.blockchainId}</p>
-                </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  tourist.status === 'safe' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                }`}>
-                  {tourist.status}
-                </span>
-              </div>
-            ))}
-          </div>
-        </div>
+// Location.java
+package com.touristsafety.model;
 
-        <div className="bg-white rounded-lg shadow p-6">
-          <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-            <Bell className="w-5 h-5" />
-            Recent Alerts
-          </h3>
-          <div className="space-y-3">
-            {alerts.map(alert => (
-              <div key={alert.id} className="p-3 border-l-4 bg-gray-50 rounded" style={{
-                borderColor: alert.severity === 'warning' ? '#f59e0b' : '#3b82f6'
-              }}>
-                <p className="text-sm font-medium">{alert.message}</p>
-                <p className="text-xs text-gray-500 mt-1">{alert.time}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </div>
+public class Location {
+    private double lat;
+    private double lng;
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Activity className="w-5 h-5" />
-          Active Incidents
-        </h3>
-        <div className="space-y-3">
-          {incidents.map(incident => (
-            <div key={incident.id} className="flex items-center justify-between p-4 bg-gray-50 rounded-lg">
-              <div>
-                <p className="font-medium">{incident.type}</p>
-                <p className="text-sm text-gray-600">{incident.location} • {incident.time}</p>
-              </div>
-              <div className="flex gap-3 items-center">
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  incident.severity === 'high' ? 'bg-red-100 text-red-700' :
-                  incident.severity === 'medium' ? 'bg-yellow-100 text-yellow-700' :
-                  'bg-blue-100 text-blue-700'
-                }`}>
-                  {incident.severity}
-                </span>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  incident.status === 'responding' ? 'bg-orange-100 text-orange-700' :
-                  'bg-green-100 text-green-700'
-                }`}>
-                  {incident.status}
-                </span>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
-    </div>
-  );
+    public Location() {}
 
-  const GeoFencingView = () => (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Geo-Fenced Safety Zones</h3>
-        <div className="space-y-4">
-          {safeZones.map(zone => (
-            <div key={zone.id} className="p-4 border rounded-lg">
-              <div className="flex justify-between items-start mb-3">
-                <div>
-                  <h4 className="font-medium">{zone.name}</h4>
-                  <p className="text-sm text-gray-600">Radius: {zone.radius} km</p>
-                  <p className="text-xs text-gray-500 mt-1">
-                    Coordinates: {zone.lat.toFixed(4)}, {zone.lng.toFixed(4)}
-                  </p>
-                </div>
-                <span className={`px-3 py-1 rounded-full text-sm ${
-                  zone.status === 'safe' ? 'bg-green-100 text-green-700' : 'bg-yellow-100 text-yellow-700'
-                }`}>
-                  {zone.status}
-                </span>
-              </div>
-              <div className="flex gap-2">
-                <button className="px-4 py-2 bg-blue-600 text-white text-sm rounded hover:bg-blue-700">
-                  View on Map
-                </button>
-                <button className="px-4 py-2 bg-gray-200 text-gray-700 text-sm rounded hover:bg-gray-300">
-                  Edit Zone
-                </button>
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+    public Location(double lat, double lng) {
+        this.lat = lat;
+        this.lng = lng;
+    }
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Zone Breach Detection</h3>
-        <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-          <div className="flex items-start gap-3">
-            <Radio className="w-5 h-5 text-blue-600 mt-1" />
-            <div>
-              <p className="font-medium text-blue-900">AI-Powered Monitoring Active</p>
-              <p className="text-sm text-blue-700 mt-1">
-                System continuously monitors tourist locations and triggers alerts when they enter restricted zones or leave safe perimeters.
-              </p>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
+    public double getLat() { return lat; }
+    public void setLat(double lat) { this.lat = lat; }
+    
+    public double getLng() { return lng; }
+    public void setLng(double lng) { this.lng = lng; }
+}
 
-  const BlockchainView = () => (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-          <Lock className="w-5 h-5" />
-          Blockchain-Based Digital Identity
-        </h3>
-        <div className="space-y-4">
-          {tourists.map(tourist => (
-            <div key={tourist.id} className="p-4 border rounded-lg bg-gradient-to-r from-purple-50 to-blue-50">
-              <div className="flex items-start justify-between mb-3">
-                <div>
-                  <h4 className="font-medium">{tourist.name}</h4>
-                  <p className="text-sm text-gray-600">{tourist.country}</p>
-                </div>
-                <CheckCircle className="w-5 h-5 text-green-600" />
-              </div>
-              <div className="space-y-2 text-sm">
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Tourist ID:</span>
-                  <span className="font-mono">{tourist.id}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Blockchain Address:</span>
-                  <span className="font-mono text-xs">{tourist.blockchainId}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Verification Status:</span>
-                  <span className="text-green-600 font-medium">Verified ✓</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-600">Last Transaction:</span>
-                  <span className="text-gray-700">2 hours ago</span>
-                </div>
-              </div>
-              <button className="mt-3 w-full px-4 py-2 bg-purple-600 text-white text-sm rounded hover:bg-purple-700">
-                View Full Blockchain Record
-              </button>
-            </div>
-          ))}
-        </div>
-      </div>
+// Incident.java
+package com.touristsafety.model;
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Blockchain Features</h3>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <FeatureCard 
-            title="Immutable Records"
-            description="All tourist movements and incidents are recorded on blockchain for tamper-proof audit trails"
-          />
-          <FeatureCard 
-            title="Privacy Protection"
-            description="Personal data encrypted with zero-knowledge proofs, only accessible with proper authorization"
-          />
-          <FeatureCard 
-            title="Smart Contracts"
-            description="Automated incident response protocols triggered by predefined conditions"
-          />
-          <FeatureCard 
-            title="Cross-Border Verification"
-            description="Instant identity verification across international jurisdictions"
-          />
-        </div>
-      </div>
-    </div>
-  );
+public class Incident {
+    private String id;
+    private String type;
+    private String severity;
+    private String location;
+    private String time;
+    private String status;
 
-  const AIMonitoringView = () => (
-    <div className="space-y-6">
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">AI-Powered Threat Detection</h3>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <MetricCard label="Anomalies Detected" value="12" trend="+3%" />
-          <MetricCard label="Crowd Density" value="Medium" trend="Stable" />
-          <MetricCard label="Risk Score" value="Low" trend="-5%" />
-        </div>
+    public Incident() {}
+
+    public Incident(String id, String type, String severity, String location, String time, String status) {
+        this.id = id;
+        this.type = type;
+        this.severity = severity;
+        this.location = location;
+        this.time = time;
+        this.status = status;
+    }
+
+    // Getters and Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    
+    public String getType() { return type; }
+    public void setType(String type) { this.type = type; }
+    
+    public String getSeverity() { return severity; }
+    public void setSeverity(String severity) { this.severity = severity; }
+    
+    public String getLocation() { return location; }
+    public void setLocation(String location) { this.location = location; }
+    
+    public String getTime() { return time; }
+    public void setTime(String time) { this.time = time; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+}
+
+// Alert.java
+package com.touristsafety.model;
+
+public class Alert {
+    private String id;
+    private String message;
+    private String severity;
+    private String time;
+
+    public Alert() {}
+
+    public Alert(String id, String message, String severity, String time) {
+        this.id = id;
+        this.message = message;
+        this.severity = severity;
+        this.time = time;
+    }
+
+    // Getters and Setters
+    public String getId() { return id; }
+    public void setId(String id) { this.id = id; }
+    
+    public String getMessage() { return message; }
+    public void setMessage(String message) { this.message = message; }
+    
+    public String getSeverity() { return severity; }
+    public void setSeverity(String severity) { this.severity = severity; }
+    
+    public String getTime() { return time; }
+    public void setTime(String time) { this.time = time; }
+}
+
+// SafeZone.java
+package com.touristsafety.model;
+
+public class SafeZone {
+    private int id;
+    private String name;
+    private double lat;
+    private double lng;
+    private double radius;
+    private String status;
+
+    public SafeZone() {}
+
+    public SafeZone(int id, String name, double lat, double lng, double radius, String status) {
+        this.id = id;
+        this.name = name;
+        this.lat = lat;
+        this.lng = lng;
+        this.radius = radius;
+        this.status = status;
+    }
+
+    // Getters and Setters
+    public int getId() { return id; }
+    public void setId(int id) { this.id = id; }
+    
+    public String getName() { return name; }
+    public void setName(String name) { this.name = name; }
+    
+    public double getLat() { return lat; }
+    public void setLat(double lat) { this.lat = lat; }
+    
+    public double getLng() { return lng; }
+    public void setLng(double lng) { this.lng = lng; }
+    
+    public double getRadius() { return radius; }
+    public void setRadius(double radius) { this.radius = radius; }
+    
+    public String getStatus() { return status; }
+    public void setStatus(String status) { this.status = status; }
+}
+
+// ==================== SERVICE CLASSES ====================
+
+// TouristSafetyService.java
+package com.touristsafety.service;
+
+import com.touristsafety.model.*;
+import org.springframework.stereotype.Service;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.stream.Collectors;
+
+@Service
+public class TouristSafetyService {
+    private List<Tourist> tourists;
+    private List<Incident> incidents;
+    private List<Alert> alerts;
+    private List<SafeZone> safeZones;
+
+    public TouristSafetyService() {
+        initializeData();
+    }
+
+    private void initializeData() {
+        // Initialize tourists
+        tourists = new ArrayList<>();
+        tourists.add(new Tourist("T001", "John Smith", "USA", 
+            new Location(28.6139, 77.2090), "safe", "0x7a9f...3c2e"));
+        tourists.add(new Tourist("T002", "Maria Garcia", "Spain", 
+            new Location(28.6562, 77.2410), "safe", "0x4b1c...8d9a"));
+        tourists.add(new Tourist("T003", "Li Wei", "China", 
+            new Location(28.6289, 77.2065), "alert", "0x9e2f...1a4b"));
+
+        // Initialize incidents
+        incidents = new ArrayList<>();
+        incidents.add(new Incident("INC001", "Medical", "medium", 
+            "Market Area", "10 min ago", "responding"));
+        incidents.add(new Incident("INC002", "Theft Report", "low", 
+            "Tourist District", "1 hr ago", "resolved"));
+
+        // Initialize alerts
+        alerts = new ArrayList<>();
+        alerts.add(new Alert("A001", "Tourist T003 entered restricted zone", 
+            "warning", "5 min ago"));
+        alerts.add(new Alert("A002", "Crowding detected in Heritage Zone", 
+            "info", "15 min ago"));
+
+        // Initialize safe zones
+        safeZones = new ArrayList<>();
+        safeZones.add(new SafeZone(1, "Tourist District", 28.6139, 77.2090, 2.0, "safe"));
+        safeZones.add(new SafeZone(2, "Heritage Zone", 28.6562, 77.2410, 1.5, "safe"));
+        safeZones.add(new SafeZone(3, "Market Area", 28.6289, 77.2065, 1.0, "caution"));
+    }
+
+    // Tourist methods
+    public List<Tourist> getAllTourists() {
+        return tourists;
+    }
+
+    public Tourist getTouristById(String id) {
+        return tourists.stream()
+            .filter(t -> t.getId().equals(id))
+            .findFirst()
+            .orElse(null);
+    }
+
+    public long getSafeTouristsCount() {
+        return tourists.stream()
+            .filter(t -> "safe".equals(t.getStatus()))
+            .count();
+    }
+
+    public long getAlertTouristsCount() {
+        return tourists.stream()
+            .filter(t -> "alert".equals(t.getStatus()))
+            .count();
+    }
+
+    public Tourist addTourist(Tourist tourist) {
+        tourists.add(tourist);
+        return tourist;
+    }
+
+    public Tourist updateTourist(String id, Tourist updatedTourist) {
+        for (int i = 0; i < tourists.size(); i++) {
+            if (tourists.get(i).getId().equals(id)) {
+                updatedTourist.setId(id);
+                tourists.set(i, updatedTourist);
+                return updatedTourist;
+            }
+        }
+        return null;
+    }
+
+    // Incident methods
+    public List<Incident> getAllIncidents() {
+        return incidents;
+    }
+
+    public long getActiveIncidentsCount() {
+        return incidents.stream()
+            .filter(i -> "responding".equals(i.getStatus()))
+            .count();
+    }
+
+    public Incident addIncident(Incident incident) {
+        incidents.add(incident);
+        return incident;
+    }
+
+    // Alert methods
+    public List<Alert> getAllAlerts() {
+        return alerts;
+    }
+
+    public Alert addAlert(Alert alert) {
+        alerts.add(alert);
+        return alert;
+    }
+
+    // Safe zone methods
+    public List<SafeZone> getAllSafeZones() {
+        return safeZones;
+    }
+
+    public SafeZone getSafeZoneById(int id) {
+        return safeZones.stream()
+            .filter(z -> z.getId() == id)
+            .findFirst()
+            .orElse(null);
+    }
+
+    public SafeZone addSafeZone(SafeZone zone) {
+        safeZones.add(zone);
+        return zone;
+    }
+
+    // Geo-fencing logic
+    public boolean checkGeoFenceBreach(Tourist tourist) {
+        for (SafeZone zone : safeZones) {
+            double distance = calculateDistance(
+                tourist.getLocation().getLat(), 
+                tourist.getLocation().getLng(),
+                zone.getLat(), 
+                zone.getLng()
+            );
+            
+            if (distance > zone.getRadius() && "safe".equals(zone.getStatus())) {
+                return true; // Breach detected
+            }
+        }
+        return false;
+    }
+
+    // Calculate distance between two coordinates (Haversine formula)
+    private double calculateDistance(double lat1, double lng1, double lat2, double lng2) {
+        final int R = 6371; // Earth's radius in km
         
-        <div className="space-y-4">
-          <div className="p-4 bg-green-50 border border-green-200 rounded-lg">
-            <h4 className="font-medium text-green-900 mb-2">Pattern Recognition Active</h4>
-            <p className="text-sm text-green-700">
-              AI models analyzing movement patterns, crowd behavior, and environmental factors to predict and prevent incidents.
-            </p>
-          </div>
-          
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg">
-            <h4 className="font-medium text-blue-900 mb-2">Predictive Analytics</h4>
-            <p className="text-sm text-blue-700">
-              Machine learning models predict high-risk areas and times based on historical data and real-time conditions.
-            </p>
-          </div>
+        double latDistance = Math.toRadians(lat2 - lat1);
+        double lngDistance = Math.toRadians(lng2 - lng1);
+        
+        double a = Math.sin(latDistance / 2) * Math.sin(latDistance / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(lngDistance / 2) * Math.sin(lngDistance / 2);
+        
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        
+        return R * c;
+    }
+}
 
-          <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-            <h4 className="font-medium text-purple-900 mb-2">Natural Language Processing</h4>
-            <p className="text-sm text-purple-700">
-              AI processes tourist reports and social media to detect emerging safety concerns in real-time.
-            </p>
-          </div>
-        </div>
-      </div>
+// ==================== REST CONTROLLER ====================
 
-      <div className="bg-white rounded-lg shadow p-6">
-        <h3 className="text-lg font-semibold mb-4">Emergency Response Automation</h3>
-        <div className="space-y-3">
-          <ResponseCard 
-            trigger="Geo-fence breach in restricted zone"
-            action="Automatic alert to tourist + notify local authorities"
-            status="Active"
-          />
-          <ResponseCard 
-            trigger="Panic button pressed"
-            action="Dispatch emergency services + record GPS location on blockchain"
-            status="Active"
-          />
-          <ResponseCard 
-            trigger="Unusual movement pattern detected"
-            action="Send check-in notification to tourist"
-            status="Active"
-          />
-        </div>
-      </div>
-    </div>
-  );
+// TouristSafetyController.java
+package com.touristsafety.controller;
 
-  return (
-    <div className="min-h-screen bg-gray-100">
-      <header className="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6 shadow-lg">
-        <div className="max-w-7xl mx-auto">
-          <h1 className="text-3xl font-bold flex items-center gap-3">
-            <Shield className="w-8 h-8" />
-            Smart Tourist Safety Monitoring System
-          </h1>
-          <p className="text-blue-100 mt-2">AI-Powered Protection with Geo-Fencing & Blockchain Identity</p>
-        </div>
-      </header>
+import com.touristsafety.model.*;
+import com.touristsafety.service.TouristSafetyService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
 
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="flex gap-2 mb-6 overflow-x-auto">
-          <TabButton label="Dashboard" icon={<Activity />} active={activeTab === 'dashboard'} onClick={() => setActiveTab('dashboard')} />
-          <TabButton label="Geo-Fencing" icon={<MapPin />} active={activeTab === 'geofencing'} onClick={() => setActiveTab('geofencing')} />
-          <TabButton label="Blockchain ID" icon={<Lock />} active={activeTab === 'blockchain'} onClick={() => setActiveTab('blockchain')} />
-          <TabButton label="AI Monitoring" icon={<Radio />} active={activeTab === 'ai'} onClick={() => setActiveTab('ai')} />
-        </div>
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
-        {activeTab === 'dashboard' && <DashboardView />}
-        {activeTab === 'geofencing' && <GeoFencingView />}
-        {activeTab === 'blockchain' && <BlockchainView />}
-        {activeTab === 'ai' && <AIMonitoringView />}
-      </div>
-    </div>
-  );
-};
+@RestController
+@RequestMapping("/api")
+@CrossOrigin(origins = "*")
+public class TouristSafetyController {
 
-const StatCard = ({ icon, label, value, color }) => (
-  <div className="bg-white rounded-lg shadow p-6">
-    <div className="flex items-center justify-between">
-      <div>
-        <p className="text-gray-600 text-sm">{label}</p>
-        <p className="text-3xl font-bold mt-1">{value}</p>
-      </div>
-      <div className={`p-3 rounded-full bg-${color}-100 text-${color}-600`}>
-        {icon}
-      </div>
-    </div>
-  </div>
-);
+    @Autowired
+    private TouristSafetyService service;
 
-const TabButton = ({ label, icon, active, onClick }) => (
-  <button
-    onClick={onClick}
-    className={`flex items-center gap-2 px-4 py-2 rounded-lg font-medium transition whitespace-nowrap ${
-      active ? 'bg-blue-600 text-white' : 'bg-white text-gray-700 hover:bg-gray-50'
-    }`}
-  >
-    {icon}
-    {label}
-  </button>
-);
+    // Dashboard endpoint
+    @GetMapping("/dashboard")
+    public ResponseEntity<Map<String, Object>> getDashboard() {
+        Map<String, Object> dashboard = new HashMap<>();
+        dashboard.put("totalTourists", service.getAllTourists().size());
+        dashboard.put("safeTourists", service.getSafeTouristsCount());
+        dashboard.put("alertTourists", service.getAlertTouristsCount());
+        dashboard.put("activeIncidents", service.getActiveIncidentsCount());
+        dashboard.put("tourists", service.getAllTourists());
+        dashboard.put("incidents", service.getAllIncidents());
+        dashboard.put("alerts", service.getAllAlerts());
+        return ResponseEntity.ok(dashboard);
+    }
 
-const FeatureCard = ({ title, description }) => (
-  <div className="p-4 bg-gray-50 rounded-lg border">
-    <h4 className="font-medium mb-2">{title}</h4>
-    <p className="text-sm text-gray-600">{description}</p>
-  </div>
-);
+    // Tourist endpoints
+    @GetMapping("/tourists")
+    public ResponseEntity<List<Tourist>> getAllTourists() {
+        return ResponseEntity.ok(service.getAllTourists());
+    }
 
-const MetricCard = ({ label, value, trend }) => (
-  <div className="p-4 bg-gray-50 rounded-lg">
-    <p className="text-sm text-gray-600">{label}</p>
-    <p className="text-2xl font-bold mt-1">{value}</p>
-    <p className="text-xs text-gray-500 mt-1">{trend}</p>
-  </div>
-);
+    @GetMapping("/tourists/{id}")
+    public ResponseEntity<Tourist> getTouristById(@PathVariable String id) {
+        Tourist tourist = service.getTouristById(id);
+        if (tourist != null) {
+            return ResponseEntity.ok(tourist);
+        }
+        return ResponseEntity.notFound().build();
+    }
 
-const ResponseCard = ({ trigger, action, status }) => (
-  <div className="p-4 bg-gray-50 rounded-lg border-l-4 border-green-500">
-    <div className="flex justify-between items-start mb-2">
-      <p className="font-medium text-sm">Trigger: {trigger}</p>
-      <span className="px-2 py-1 bg-green-100 text-green-700 text-xs rounded">{status}</span>
-    </div>
-    <p className="text-sm text-gray-600">Action: {action}</p>
-  </div>
-);
+    @PostMapping("/tourists")
+    public ResponseEntity<Tourist> addTourist(@RequestBody Tourist tourist) {
+        Tourist created = service.addTourist(tourist);
+        return ResponseEntity.ok(created);
+    }
 
-export default TouristSafetySystem;
+    @PutMapping("/tourists/{id}")
+    public ResponseEntity<Tourist> updateTourist(@PathVariable String id, @RequestBody Tourist tourist) {
+        Tourist updated = service.updateTourist(id, tourist);
+        if (updated != null) {
+            return ResponseEntity.ok(updated);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    // Incident endpoints
+    @GetMapping("/incidents")
+    public ResponseEntity<List<Incident>> getAllIncidents() {
+        return ResponseEntity.ok(service.getAllIncidents());
+    }
+
+    @PostMapping("/incidents")
+    public ResponseEntity<Incident> addIncident(@RequestBody Incident incident) {
+        Incident created = service.addIncident(incident);
+        return ResponseEntity.ok(created);
+    }
+
+    // Alert endpoints
+    @GetMapping("/alerts")
+    public ResponseEntity<List<Alert>> getAllAlerts() {
+        return ResponseEntity.ok(service.getAllAlerts());
+    }
+
+    @PostMapping("/alerts")
+    public ResponseEntity<Alert> addAlert(@RequestBody Alert alert) {
+        Alert created = service.addAlert(alert);
+        return ResponseEntity.ok(created);
+    }
+
+    // Safe zone endpoints
+    @GetMapping("/safezones")
+    public ResponseEntity<List<SafeZone>> getAllSafeZones() {
+        return ResponseEntity.ok(service.getAllSafeZones());
+    }
+
+    @GetMapping("/safezones/{id}")
+    public ResponseEntity<SafeZone> getSafeZoneById(@PathVariable int id) {
+        SafeZone zone = service.getSafeZoneById(id);
+        if (zone != null) {
+            return ResponseEntity.ok(zone);
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @PostMapping("/safezones")
+    public ResponseEntity<SafeZone> addSafeZone(@RequestBody SafeZone zone) {
+        SafeZone created = service.addSafeZone(zone);
+        return ResponseEntity.ok(created);
+    }
+
+    // Geo-fencing check
+    @PostMapping("/geofence/check/{touristId}")
+    public ResponseEntity<Map<String, Boolean>> checkGeoFence(@PathVariable String touristId) {
+        Tourist tourist = service.getTouristById(touristId);
+        if (tourist == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        boolean breached = service.checkGeoFenceBreach(tourist);
+        Map<String, Boolean> result = new HashMap<>();
+        result.put("breached", breached);
+        return ResponseEntity.ok(result);
+    }
+}
+
+// ==================== MAIN APPLICATION ====================
+
+// TouristSafetyApplication.java
+package com.touristsafety;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class TouristSafetyApplication {
+    public static void main(String[] args) {
+        SpringApplication.run(TouristSafetyApplication.class, args);
+    }
+}
+
+// ==================== APPLICATION PROPERTIES ====================
+/*
+# application.properties
+server.port=8080
+spring.application.name=tourist-safety-system
+
+# Enable CORS
+spring.web.cors.allowed-origins=*
+spring.web.cors.allowed-methods=GET,POST,PUT,DELETE
+spring.web.cors.allowed-headers=*
+*/
+
+// ==================== POM.XML (Maven Dependencies) ====================
+/*
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
+         http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>3.2.0</version>
+    </parent>
+    
+    <groupId>com.touristsafety</groupId>
+    <artifactId>tourist-safety-system</artifactId>
+    <version>1.0.0</version>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.h2database</groupId>
+            <artifactId>h2</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+</project>
+*/
