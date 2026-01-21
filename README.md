@@ -84,6 +84,6 @@ Java 17+ (JDK)
 Maven or Gradle
 
 
-Build the project:
+
 
 
